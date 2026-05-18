@@ -19,7 +19,6 @@ interface ReportData {
 export class EmailService {
   private transporter: nodemailer.Transporter;
   private fromEmail: string;
-  private authorityEmail: string;
 
   constructor() {
     const config: EmailConfig = {
@@ -33,7 +32,6 @@ export class EmailService {
     };
 
     this.fromEmail = process.env.SMTP_FROM || process.env.SMTP_USER || '';
-    this.authorityEmail = process.env.AUTHORITY_EMAIL || 'test@example.com';
 
     console.log('📧 Email Service Config:', {
       host: config.host,
@@ -41,19 +39,23 @@ export class EmailService {
       user: config.auth.user ? '***' : 'EMPTY',
       pass: config.auth.pass ? '***' : 'EMPTY',
       from: this.fromEmail,
-      to: this.authorityEmail,
     });
 
     this.transporter = nodemailer.createTransport(config);
   }
 
-  async sendCriticalAlert(reportData: ReportData, pdfBuffer: Buffer): Promise<boolean> {
+  async sendCriticalAlert(reportData: ReportData, pdfBuffer: Buffer, recipientEmail: string): Promise<boolean> {
     try {
       const { station, timestamp, caseId } = reportData;
 
+      if (!recipientEmail) {
+        console.error('❌ No recipient email provided');
+        return false;
+      }
+
       const mailOptions = {
         from: `ECO-SENTINEL Alert System <${this.fromEmail}>`,
-        to: this.authorityEmail,
+        to: recipientEmail,
         subject: `🚨 CRITICAL POLLUTION ALERT - ${station.name} - Case ${caseId}`,
         html: this.generateEmailHTML(reportData),
         attachments: [
@@ -66,7 +68,7 @@ export class EmailService {
       };
 
       const info = await this.transporter.sendMail(mailOptions);
-      console.log('✅ Email sent successfully:', info.messageId);
+      console.log('✅ Email sent successfully to:', recipientEmail, 'Message ID:', info.messageId);
       return true;
     } catch (error) {
       console.error('❌ Email sending failed:', error);

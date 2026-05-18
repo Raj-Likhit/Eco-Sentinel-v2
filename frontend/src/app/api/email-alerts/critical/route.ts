@@ -5,12 +5,20 @@ import { generatePDFBuffer } from '@/lib/backend/utils/pdfGenerator';
 
 export async function POST(request: Request) {
   try {
-    const { station, timestamp }: AlertRequest = await request.json();
+    const body = await request.json();
+    const { station, timestamp, recipientEmail }: AlertRequest & { recipientEmail: string } = body;
 
     if (!station || !timestamp) {
       return NextResponse.json({
         success: false,
         error: 'Missing required fields: station and timestamp',
+      }, { status: 400 });
+    }
+
+    if (!recipientEmail) {
+      return NextResponse.json({
+        success: false,
+        error: 'Missing required field: recipientEmail',
       }, { status: 400 });
     }
 
@@ -35,7 +43,8 @@ export async function POST(request: Request) {
     // Send email with PDF attachment
     const emailSent = await emailService.sendCriticalAlert(
       { station, timestamp, caseId },
-      pdfBuffer
+      pdfBuffer,
+      recipientEmail
     );
 
     if (emailSent) {
@@ -43,7 +52,7 @@ export async function POST(request: Request) {
         success: true,
         message: 'Critical alert sent successfully',
         caseId,
-        recipient: process.env.AUTHORITY_EMAIL || 'test@example.com',
+        recipient: recipientEmail,
       }, { status: 200 });
     } else {
       return NextResponse.json({

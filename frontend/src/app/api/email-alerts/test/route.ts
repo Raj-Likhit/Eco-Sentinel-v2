@@ -13,7 +13,6 @@ export async function GET() {
           host: process.env.SMTP_HOST || 'smtp.gmail.com',
           port: process.env.SMTP_PORT || '587',
           from: process.env.SMTP_FROM || process.env.SMTP_USER,
-          to: process.env.AUTHORITY_EMAIL || 'test@example.com',
         },
       }, { status: 200 });
     } else {

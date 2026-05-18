@@ -12,7 +12,6 @@
     "SMTP_PORT": "@smtp_port",
     "SMTP_USER": "@smtp_user",
     "SMTP_PASS": "@smtp_pass",
-    "SMTP_FROM": "@smtp_from",
-    "AUTHORITY_EMAIL": "@authority_email"
+    "SMTP_FROM": "@smtp_from"
   }
 }
