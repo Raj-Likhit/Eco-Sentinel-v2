@@ -33,33 +33,39 @@ export async function POST(request: Request) {
     // Generate case ID
     const caseId = `ECO-${Date.now()}`;
 
-    // Generate PDF report
-    const pdfBuffer = await generatePDFBuffer({
-      station,
-      timestamp,
-      caseId,
-    });
+    let emailSent = false;
+    let emailError = null;
 
-    // Send email with PDF attachment
-    const emailSent = await emailService.sendCriticalAlert(
-      { station, timestamp, caseId },
-      pdfBuffer,
-      recipientEmail
-    );
-
-    if (emailSent) {
-      return NextResponse.json({
-        success: true,
-        message: 'Critical alert sent successfully',
+    try {
+      // Generate PDF report
+      const pdfBuffer = await generatePDFBuffer({
+        station,
+        timestamp,
         caseId,
-        recipient: recipientEmail,
-      }, { status: 200 });
-    } else {
-      return NextResponse.json({
-        success: false,
-        error: 'Failed to send email',
-      }, { status: 500 });
+      });
+
+      // Send email with PDF attachment
+      emailSent = await emailService.sendCriticalAlert(
+        { station, timestamp, caseId },
+        pdfBuffer,
+        recipientEmail
+      );
+    } catch (emailErr) {
+      emailError = emailErr instanceof Error ? emailErr.message : 'Unknown email error';
+      console.error('Email sending error:', emailErr);
+      // Don't fail the entire request if email fails
+      emailSent = false;
     }
+
+    // Return success even if email fails, but include email status
+    return NextResponse.json({
+      success: true,
+      message: 'Alert processed successfully',
+      caseId,
+      recipient: recipientEmail,
+      emailSent: emailSent,
+      emailError: emailError,
+    }, { status: 200 });
   } catch (error) {
     console.error('Error sending critical alert:', error);
     return NextResponse.json({
