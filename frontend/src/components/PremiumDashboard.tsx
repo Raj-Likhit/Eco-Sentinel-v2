@@ -47,6 +47,17 @@ export default function PremiumDashboard() {
   }, []);
 
   const handleSimulateSpike = async () => {
+    // Ask for recipient email
+    const recipientEmail = prompt(
+      'Enter your email address to receive the alert.\n\nNote: This simulates sending an alert to authorities. In production, this would notify the environmental enforcement team.',
+      ''
+    );
+
+    if (!recipientEmail || !recipientEmail.includes('@')) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
     const spikeStation: Station = {
       id: 's1',
       name: 'IDA PASHAMYLARAM CAAQMS',
@@ -142,6 +153,7 @@ export default function PremiumDashboard() {
         body: JSON.stringify({
           station: updatedSpikeStation,
           timestamp: new Date().toISOString(),
+          recipientEmail: recipientEmail,
         }),
       });
 
