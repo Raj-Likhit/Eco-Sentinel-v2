@@ -12,9 +12,6 @@ const nextConfig = {
   },
   async rewrites() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
-    if (typeof apiUrl !== 'string') {
-      throw new Error('NEXT_PUBLIC_API_URL must be a string');
-    }
     return [
       {
         source: '/api/:path*',
