@@ -1,17 +1,5 @@
 {
   "name": "eco-sentinel",
   "version": "1.0.0",
-  "description": "AI Environmental Forensics Agent",
-  "workspaces": [
-    "shared",
-    "backend",
-    "frontend"
-  ],
-  "scripts": {
-    "dev": "concurrently \"npm run dev --workspace=backend\" \"npm run dev --workspace=frontend\"",
-    "build": "npm run build --workspace=shared && npm run build --workspace=backend && npm run build --workspace=frontend"
-  },
-  "devDependencies": {
-    "concurrently": "^8.0.0"
-  }
+  "description": "AI Environmental Forensics Agent"
 }
