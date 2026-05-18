@@ -1,0 +1,40 @@
+# Python files and directories
+../backend/ai_agent/
+../backend/gee-service/
+../backend/*.py
+../backend/requirements.txt
+../backend/__pycache__/
+../backend/src/__pycache__/
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Cloud Build configs
+cloudbuild.*.yaml
+
+# Development files
+.env.local
+.env.*.local
+*.log
+
+# Git files
+.git/
+.gitignore
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx

@@ -1,0 +1,46 @@
+# Python files and directories
+backend/ai_agent/
+backend/gee-service/
+backend/*.py
+backend/requirements.txt
+backend/__pycache__/
+backend/src/__pycache__/
+
+# Docker files (not needed for Vercel)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Cloud Build configs (for Google Cloud, not Vercel)
+cloudbuild.*.yaml
+
+# Development files
+.env.local
+.env.*.local
+*.log
+node_modules/
+
+# Git files
+.git/
+.gitignore
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+build/
+.next/
+
+# Test files (optional, include if you want to run tests)
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx

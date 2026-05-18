@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+.npm/
+
+# Production builds
+dist/
+.build/
+.next/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Environment files - NEVER commit secrets
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+
+# Google Cloud SDK (too large for a repo)
+google-cloud-sdk/
+
+# Dev/debug scripts (one-off, not part of the app)
+backend/test_apis.ts
+backend/list_models.ts
+
+# Static HTML export leftovers (replaced by Next.js pages)
+frontend/*.html
+
+# TypeScript build info
+*.tsbuildinfo

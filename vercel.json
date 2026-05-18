@@ -1,0 +1,47 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build --workspace=frontend",
+  "outputDirectory": "frontend/.next",
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_API_URL": {
+      "description": "Backend API URL (e.g., https://api.example.com or http://localhost:8000 for local dev)"
+    },
+    "PYTHON_SERVICE_URL": {
+      "description": "Python service URL for satellite analysis (e.g., https://python-service.example.com)"
+    },
+    "GOOGLE_API_KEY": {
+      "description": "Google API key for Generative AI"
+    },
+    "NEXT_PUBLIC_SUPABASE_URL": {
+      "description": "Supabase project URL"
+    },
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": {
+      "description": "Supabase anonymous key"
+    },
+    "SMTP_HOST": {
+      "description": "SMTP server host for email alerts"
+    },
+    "SMTP_PORT": {
+      "description": "SMTP server port"
+    },
+    "SMTP_USER": {
+      "description": "SMTP username"
+    },
+    "SMTP_PASS": {
+      "description": "SMTP password"
+    },
+    "SMTP_FROM": {
+      "description": "Email address to send alerts from"
+    },
+    "AUTHORITY_EMAIL": {
+      "description": "Authority email for notifications"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "${NEXT_PUBLIC_API_URL}/api/:path*"
+    }
+  ]
+}

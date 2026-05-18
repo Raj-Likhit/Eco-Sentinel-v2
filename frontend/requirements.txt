@@ -1,0 +1,5 @@
+fastapi
+earthengine-api
+requests
+python-dotenv
+groq
