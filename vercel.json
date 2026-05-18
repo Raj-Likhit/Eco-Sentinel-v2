@@ -1,47 +1,18 @@
 {
-  "version": 2,
-  "buildCommand": "npm run build --workspace=frontend",
+  "buildCommand": "cd frontend && npm run build",
   "outputDirectory": "frontend/.next",
-  "framework": "nextjs",
   "env": {
     "NEXT_PUBLIC_API_URL": {
-      "description": "Backend API URL (e.g., https://api.example.com or http://localhost:8000 for local dev)"
+      "default": ""
     },
-    "PYTHON_SERVICE_URL": {
-      "description": "Python service URL for satellite analysis (e.g., https://python-service.example.com)"
-    },
-    "GOOGLE_API_KEY": {
-      "description": "Google API key for Generative AI"
-    },
-    "NEXT_PUBLIC_SUPABASE_URL": {
-      "description": "Supabase project URL"
-    },
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": {
-      "description": "Supabase anonymous key"
-    },
-    "SMTP_HOST": {
-      "description": "SMTP server host for email alerts"
-    },
-    "SMTP_PORT": {
-      "description": "SMTP server port"
-    },
-    "SMTP_USER": {
-      "description": "SMTP username"
-    },
-    "SMTP_PASS": {
-      "description": "SMTP password"
-    },
-    "SMTP_FROM": {
-      "description": "Email address to send alerts from"
-    },
-    "AUTHORITY_EMAIL": {
-      "description": "Authority email for notifications"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "${NEXT_PUBLIC_API_URL}/api/:path*"
-    }
-  ]
+    "GOOGLE_API_KEY": "@google_api_key",
+    "NEXT_PUBLIC_SUPABASE_URL": "@next_public_supabase_url",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@next_public_supabase_anon_key",
+    "SMTP_HOST": "@smtp_host",
+    "SMTP_PORT": "@smtp_port",
+    "SMTP_USER": "@smtp_user",
+    "SMTP_PASS": "@smtp_pass",
+    "SMTP_FROM": "@smtp_from",
+    "AUTHORITY_EMAIL": "@authority_email"
+  }
 }
