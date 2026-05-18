@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
     const source: PollutionSource = {
       zone: nearestZone,
-      confidence: evidence.confidenceScore,
+      confidence: evidence.confidence || 0.5,
       analysisTimestamp: new Date(),
       evidence
     };

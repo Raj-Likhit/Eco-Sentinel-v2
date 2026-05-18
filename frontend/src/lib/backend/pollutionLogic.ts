@@ -25,33 +25,33 @@ export function stationToPollutionData(station: ExternalStationData): PollutionD
 }
 
 export function findNearestIndustrialZone(pollutionData: PollutionData) {
+  const location = typeof pollutionData.location === 'object' ? pollutionData.location : { latitude: 17.3850, longitude: 78.4867 };
   return HYDERABAD_INDUSTRIAL_ZONES.reduce((nearest, candidate) => {
-    const candidateDistance = calculateDistance(pollutionData.location, candidate.location);
-    const nearestDistance = calculateDistance(pollutionData.location, nearest.location);
+    const candidateLocation = candidate.location || { latitude: 17.3850, longitude: 78.4867 };
+    const nearestLocation = nearest.location || { latitude: 17.3850, longitude: 78.4867 };
+    const candidateDistance = calculateDistance(location, candidateLocation);
+    const nearestDistance = calculateDistance(location, nearestLocation);
     return candidateDistance < nearestDistance ? candidate : nearest;
   }, HYDERABAD_INDUSTRIAL_ZONES[0]);
 }
 
 export function buildWindVector(pollutionData: PollutionData): WindVector {
   return {
-    speed: pollutionData.concentration > 100 ? 7.5 : 5.2,
+    speed: (pollutionData.concentration || 0) > 100 ? 7.5 : 5.2,
     direction: 315,
-    timestamp: pollutionData.timestamp
+    timestamp: typeof pollutionData.timestamp === 'string' ? pollutionData.timestamp : new Date().toISOString()
   };
 }
 
 export function buildAlert(source: PollutionSource, pollutionData: PollutionData): PollutionAlert {
+  const zoneName = source.zone?.name || source.name || 'Unknown Source';
   return {
     id: `alert-${pollutionData.id}`,
     pollutionData,
     identifiedSource: source,
-    aiExplanation: `Evidence suggests ${source.zone.name} is the most likely upwind contributor with ${(source.confidence * 100).toFixed(0)}% confidence.`,
+    aiExplanation: `Evidence suggests ${zoneName} is the most likely upwind contributor with ${(source.confidence * 100).toFixed(0)}% confidence.`,
     timestamp: new Date(),
-    status: 'investigating',
-    markers: [
-      source.evidence?.windTrajectoryMatch ? 'WIND_MATCHED' : 'WIND_INCONCLUSIVE',
-      source.evidence?.satelliteSpectralMatch ? 'SATELLITE_VERIFIED' : 'SATELLITE_UNAVAILABLE'
-    ]
+    status: 'investigating'
   };
 }
 
@@ -67,7 +67,11 @@ export function mergeAlerts(generatedAlerts: PollutionAlert[]): PollutionAlert[]
   }
 
   globalState.alerts = Array.from(merged.values())
-    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .sort((a, b) => {
+      const aTime = a.timestamp instanceof Date ? a.timestamp.getTime() : new Date(a.timestamp || 0).getTime();
+      const bTime = b.timestamp instanceof Date ? b.timestamp.getTime() : new Date(b.timestamp || 0).getTime();
+      return bTime - aTime;
+    })
     .slice(0, 25);
 
   return globalState.alerts;
@@ -109,9 +113,10 @@ export async function analyzeStation(station: ExternalStationData) {
   const nearestZone = findNearestIndustrialZone(pollutionData);
   const evidence = await ForensicService.analyzeChainOfEvidence(pollutionData, nearestZone);
   const windVector = buildWindVector(pollutionData);
+  const location = typeof pollutionData.location === 'object' ? pollutionData.location : { latitude: 17.3850, longitude: 78.4867 };
   const plume = PlumeService.calculatePlume(
-    { lat: pollutionData.location.latitude, lng: pollutionData.location.longitude },
-    pollutionData.concentration,
+    { lat: location.latitude, lng: location.longitude },
+    pollutionData.concentration || 0,
     windVector.speed,
     windVector.direction
   );
@@ -122,7 +127,7 @@ export async function analyzeStation(station: ExternalStationData) {
     plume,
     source: {
       zone: nearestZone,
-      confidence: evidence.confidenceScore,
+      confidence: evidence.confidence || 0,
       analysisTimestamp: new Date(),
       evidence
     }

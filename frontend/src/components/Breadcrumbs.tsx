@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { MOCK_ALERTS } from '../data/mockAlerts';
+import { MOCK_ALERTS } from '../data/mockData';
 
 export default function Breadcrumbs() {
     const searchParams = useSearchParams();

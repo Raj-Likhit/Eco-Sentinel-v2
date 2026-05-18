@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PollutionAlert } from '../data/mockAlerts';
+import { PollutionAlert } from '@eco-sentinel/shared';
 
 interface Message {
     id: string;

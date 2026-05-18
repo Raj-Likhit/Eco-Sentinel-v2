@@ -24,13 +24,14 @@ export async function GET(request: Request) {
     const fallbackStations = rankedStations.length > 0
       ? rankedStations.map((entry) => entry.station)
       : [...stations].sort((a, b) => {
+          const zoneLocation = HYDERABAD_INDUSTRIAL_ZONES[0]?.location || { latitude: 17.3850, longitude: 78.4867 };
           const aDistance = calculateDistance(
             { latitude: a.location.latitude, longitude: a.location.longitude },
-            HYDERABAD_INDUSTRIAL_ZONES[0].location
+            zoneLocation
           );
           const bDistance = calculateDistance(
             { latitude: b.location.latitude, longitude: b.location.longitude },
-            HYDERABAD_INDUSTRIAL_ZONES[0].location
+            zoneLocation
           );
           return aDistance - bDistance;
         });

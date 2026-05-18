@@ -23,11 +23,13 @@ export class ForensicService {
 
     // The trajectory trace goes UPWIND (following the 'wind from' direction)
     const traceAngle = angleRad;
+    
+    const location = typeof data.location === 'object' ? data.location : { latitude: 17.3850, longitude: 78.4867 };
 
     for (let i = 0; i <= stepCount; i++) {
         path.push({
-            latitude: data.location.latitude + Math.sin(traceAngle) * (i * stepSize),
-            longitude: data.location.longitude + Math.cos(traceAngle) * (i * stepSize)
+            latitude: location.latitude + Math.sin(traceAngle) * (i * stepSize),
+            longitude: location.longitude + Math.cos(traceAngle) * (i * stepSize)
         });
     }
 
@@ -41,12 +43,13 @@ export class ForensicService {
     try {
       // Import axios dynamically or ensure it's imported at the top. We'll use global fetch here for simplicity.
       const pythonServiceUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:5000';
+      const location = typeof data.location === 'object' ? data.location : { latitude: 17.3850, longitude: 78.4867 };
       const response = await fetch(`${pythonServiceUrl}/api/satellite/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          latitude: data.location.latitude,
-          longitude: data.location.longitude,
+          latitude: location.latitude,
+          longitude: location.longitude,
           pollutant: data.pollutant
         })
       });
@@ -63,8 +66,10 @@ export class ForensicService {
     }
     
     // Fallback logic
-    const distanceToZone = calculateDistance(data.location, nearestZone.location);
-    return { match: data.concentration > 60 && distanceToZone < 20 };
+    const location = typeof data.location === 'object' ? data.location : { latitude: 17.3850, longitude: 78.4867 };
+    const zoneLocation = nearestZone.location || { latitude: 17.3850, longitude: 78.4867 };
+    const distanceToZone = calculateDistance(location, zoneLocation);
+    return { match: (data.concentration || 0) > 60 && distanceToZone < 20 };
   }
 
   /**
@@ -74,23 +79,24 @@ export class ForensicService {
     const trajectoryPath = await this.traceWindTrajectory(data);
     const satelliteResult = await this.performSatelliteSpectralMatch(data, nearestZone);
     
+    const zoneLocation = nearestZone.location || { latitude: 17.3850, longitude: 78.4867 };
     // Calculate if the trajectory actually passes near the industrial zone
     // Simplified: Check if any point in trajectory is within 5km of zone
     const windTrajectoryMatch = trajectoryPath.some(point => 
-        calculateDistance(point, nearestZone.location) < 5
+        calculateDistance(point, zoneLocation) < 5
     );
 
     // Confidence Calculation
     let confidence = 0.6; // Base 
     if (windTrajectoryMatch) confidence += 0.2;
     if (satelliteResult.match) confidence += (satelliteResult.confidence || 0.15);
-    if (data.concentration > 100) confidence += 0.05;
+    if ((data.concentration || 0) > 100) confidence += 0.05;
 
     return {
       windTrajectoryMatch,
       satelliteSpectralMatch: satelliteResult.match,
       trajectoryPath,
-      confidenceScore: Math.min(0.98, confidence),
+      confidence: Math.min(0.98, confidence),
       satelliteTileUrl: satelliteResult.tileUrl
     };
   }
